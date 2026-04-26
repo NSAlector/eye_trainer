@@ -1,0 +1,66 @@
+{
+  "survey_id": "primary_001",
+  "completed_at": "2026-04-24T15:39:48.520357",
+  "profile": {
+    "name": "мч",
+    "age": 3,
+    "wears_glasses": true,
+    "disease_type": "hyperopia",
+    "disease_level": "+2",
+    "color_blindness": "Tritanopia",
+    "interests": [
+      "space"
+    ]
+  },
+  "answers": [
+    {
+      "question_id": "q_name",
+      "question_text": "Введите ваше имя",
+      "answer": [
+        "мч"
+      ]
+    },
+    {
+      "question_id": "q_age",
+      "question_text": "Введите ваш возраст",
+      "answer": [
+        "3"
+      ]
+    },
+    {
+      "question_id": "q_med",
+      "question_text": "Носите ли вы очки или линзы?",
+      "answer": [
+        "Да"
+      ]
+    },
+    {
+      "question_id": "q_disease_type",
+      "question_text": "Какое заболевание зрения вам диагностировали?",
+      "answer": [
+        "hyperopia"
+      ]
+    },
+    {
+      "question_id": "q_disease_level",
+      "question_text": "Какая степень заболевания?",
+      "answer": [
+        "+2"
+      ]
+    },
+    {
+      "question_id": "q_color_blindness",
+      "question_text": "Есть ли у вас нарушение цветового восприятия?",
+      "answer": [
+        "Tritanopia"
+      ]
+    },
+    {
+      "question_id": "q_int_001",
+      "question_text": "Выберите темы, которые вам нравятся (влияет на сцену упражнений):",
+      "answer": [
+        "space"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+[submodule "eye_gymnastics"]
+	path = eye_gymnastics
+	url = https://github.com/lixius-murk/eye_gymnastics

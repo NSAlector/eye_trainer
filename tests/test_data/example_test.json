@@ -1,0 +1,131 @@
+{
+  "survey_info": {
+    "survey_id": "primary_002",
+    "name": "Первичная настройка",
+    "description": "Подбор параметров тренировки",
+    "duration": 2
+  },
+  "sections":[
+    {
+      "section_id": "personal",
+      "title": "О вас",
+      "questions":[
+        {
+          "question_index": 0,
+          "question_id": "q_name",
+          "text": "Ваше имя",
+          "type": "text"
+        },
+        {
+          "question_index": 1,
+          "question_id": "q_age",
+          "text": "Ваш возраст",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "section_id": "vision",
+      "title": "Зрение",
+      "questions":[
+        {
+          "question_index": 2,
+          "question_id": "q_disease_type",
+          "text": "Есть ли у вас особенности зрения?",
+          "type": "single_choice",
+          "options":[
+            {"text": "Миопия (близорукость)", "value": "myopia"},
+            {"text": "Гиперметропия (дальнозоркость)", "value": "hyperopia"},
+            {"text": "Нет / не знаю", "value": "none"}
+          ]
+        },
+        {
+          "question_index": 3,
+          "question_id": "q_disease_level",
+          "text": "Какая степень заболевания?",
+          "type": "single_choice",
+          "options":[],
+          "skip_if": {
+            "question_id": "q_disease_type",
+            "values": ["none"]
+          },
+          "options_if": {
+            "q_disease_type": {
+              "myopia":[
+                {"text": "Слабая (-1)", "value": "-1"},
+                {"text": "Слабая (-2)", "value": "-2"},
+                {"text": "Средняя (-3)", "value": "-3"},
+                {"text": "Средняя (-4)", "value": "-4"},
+                {"text": "Высокая (-5)", "value": "-5"},
+                {"text": "Высокая (-6)", "value": "-6"}
+              ],
+              "hyperopia":[
+                {"text": "Слабая (+1)", "value": "+1"},
+                {"text": "Слабая (+2)", "value": "+2"},
+                {"text": "Средняя (+3)", "value": "+3"},
+                {"text": "Средняя (+4)", "value": "+4"},
+                {"text": "Высокая (+5)", "value": "+5"},
+                {"text": "Высокая (+6)", "value": "+6"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "section_id": "performance",
+      "title": "Нагрузка",
+      "questions":[
+        {
+          "question_index": 4,
+          "question_id": "q_fatigue",
+          "text": "Как быстро устают ваши глаза от экрана?",
+          "type": "single_choice",
+          "options":[
+            {"text": "Быстро", "value": "high"},
+            {"text": "Средне", "value": "medium"},
+            {"text": "Почти не устают", "value": "low"}
+          ]
+        }
+      ]
+    },
+    {
+      "section_id": "vision_extra",
+      "title": "Дополнительно",
+      "questions":[
+        {
+          "question_index": 5,
+          "question_id": "q_color_blindness",
+          "text": "Есть ли у вас особенности цветового восприятия?",
+          "type": "single_choice",
+          "options":[
+            {"text": "Нет", "value": "Healthy"},
+            {"text": "Дейтеранопия (слабость к зелёному)", "value": "Deuteranopia"},
+            {"text": "Протанопия (слабость к красному)", "value": "Protanopia"},
+            {"text": "Тританопия (слабость к синему)", "value": "Tritanopia"},
+            {"text": "Ахроматопсия (нет цветного зрения)", "value": "Achromatopsia"}
+          ]
+        }
+      ]
+    },
+    {
+      "section_id": "interests",
+      "title": "Темы",
+      "questions":[
+        {
+          "question_index": 6,
+          "question_id": "q_theme",
+          "text": "Выберите темы для визуальной сцены:",
+          "type": "multiple_choice",
+          "options":[
+            {"text": "Живая природа", "value": "nature"},
+            {"text": "Авиация и транспорт", "value": "transport"},
+            {"text": "Космос и звёзды", "value": "space"},
+            {"text": "Животные", "value": "animals"},
+            {"text": "Водная тематика", "value": "sea"}
+          ]
+        }
+      ]
+    }
+  ]
+}

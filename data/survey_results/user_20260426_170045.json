@@ -1,0 +1,61 @@
+{
+  "survey_id": "primary_002",
+  "completed_at": "2026-04-26T14:00:45.596772",
+  "profile": {
+    "name": "",
+    "age": null,
+    "disease_type": "myopia",
+    "disease_level": "-1",
+    "color_blindness": "Healthy",
+    "interests": [
+      "animals"
+    ]
+  },
+  "answers": [
+    {
+      "question_id": "q_name",
+      "question_text": "Ваше имя",
+      "answer": []
+    },
+    {
+      "question_id": "q_age",
+      "question_text": "Ваш возраст",
+      "answer": []
+    },
+    {
+      "question_id": "q_disease_type",
+      "question_text": "Есть ли у вас особенности зрения?",
+      "answer": [
+        "myopia"
+      ]
+    },
+    {
+      "question_id": "q_disease_level",
+      "question_text": "Какая степень заболевания?",
+      "answer": [
+        "-1"
+      ]
+    },
+    {
+      "question_id": "q_fatigue",
+      "question_text": "Как быстро устают ваши глаза от экрана?",
+      "answer": [
+        "high"
+      ]
+    },
+    {
+      "question_id": "q_color_blindness",
+      "question_text": "Есть ли у вас особенности цветового восприятия?",
+      "answer": [
+        "Healthy"
+      ]
+    },
+    {
+      "question_id": "q_theme",
+      "question_text": "Выберите темы для визуальной сцены:",
+      "answer": [
+        "animals"
+      ]
+    }
+  ]
+}

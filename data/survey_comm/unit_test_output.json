@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "profile_name": "Alex",
+  "profile_age": "30",
+  "profile_disease": "Healthy 0",
+  "exercise_plan": [
+    "Стандартная программа"
+  ],
+  "summary": "Пользователь: Alex, 30 лет\nДиагноз: Healthy 0\nОчки/линзы: Нет\n──────────────────────────────\n• Стандартная программа\nФон: plain_white.png",
+  "json_path": "/home/felix/repo/eye-trainer/python_survey/utils/../data/survey_results/Alex_20260413_231401.json"
+}

@@ -1,0 +1,47 @@
+{
+    "answers": [
+        {
+            "answer": [
+                "fggf"
+            ],
+            "question_id": "q_age",
+            "question_text": "Введите ваш возраст"
+        },
+        {
+            "answer": [
+                "Healthy"
+            ],
+            "question_id": "q_color_blindness",
+            "question_text": "Есть ли у вас нарушение цветового восприятия?"
+        },
+        {
+            "answer": [
+                "other"
+            ],
+            "question_id": "q_disease_type",
+            "question_text": "Какое заболевание зрения вам диагностировали?"
+        },
+        {
+            "answer": [
+                "sea"
+            ],
+            "question_id": "q_int_001",
+            "question_text": "Выберите темы, которые вам нравятся (влияет на сцену упражнений):"
+        },
+        {
+            "answer": [
+                "Нет"
+            ],
+            "question_id": "q_med",
+            "question_text": "Носите ли вы очки или линзы?"
+        },
+        {
+            "answer": [
+                "gkj"
+            ],
+            "question_id": "q_name",
+            "question_text": "Введите ваше имя"
+        }
+    ],
+    "survey_id": "primary_001"
+}

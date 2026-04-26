@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TrainingTab</class>
+ <widget class="QWidget" name="TrainingTab">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Программа тренировок</string>
+  </property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <property name="spacing"><number>0</number></property>
+
+   <!-- ═══════════════════════════════════════════ VIDEO AREA -->
+   <item>
+    <widget class="QFrame" name="videoFrame">
+     <property name="visible"><bool>false</bool></property>
+     <property name="styleSheet">
+      <string>QFrame { background: #000000; border: none; }</string>
+     </property>
+     <layout class="QVBoxLayout" name="videoLayout">
+      <property name="leftMargin"><number>0</number></property>
+      <property name="topMargin"><number>0</number></property>
+      <property name="rightMargin"><number>0</number></property>
+      <property name="bottomMargin"><number>0</number></property>
+      <property name="spacing"><number>0</number></property>
+
+      <item>
+       <widget class="QLabel" name="videoLabel">
+        <property name="text"><string/></property>
+        <property name="alignment">
+         <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
+        </property>
+        <property name="minimumSize">
+         <size><width>0</width><height>600</height></size>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string>background: #000000;</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QFrame" name="stopBtnContainer">
+        <property name="minimumSize"><size><width>0</width><height>60</height></size></property>
+        <property name="maximumSize"><size><width>16777215</width><height>60</height></size></property>
+        <property name="styleSheet">
+         <string>QFrame { background: rgba(0,0,0,200); border: none; }</string>
+        </property>
+        <layout class="QHBoxLayout" name="stopBtnLayout">
+         <property name="leftMargin"><number>24</number></property>
+         <property name="topMargin"><number>0</number></property>
+         <property name="rightMargin"><number>24</number></property>
+         <property name="bottomMargin"><number>0</number></property>
+         <property name="spacing"><number>0</number></property>
+         <item>
+          <spacer name="stopBtnSpacer">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0">
+            <size><width>40</width><height>20</height></size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="LaunchButton" name="stopBtn">
+           <property name="text"><string>Остановить</string></property>
+           <property name="minimumSize"><size><width>200</width><height>52</height></size></property>
+           <property name="maximumSize"><size><width>200</width><height>52</height></size></property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <!-- ═══════════════════════════════════════════ SCROLL AREA -->
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="styleSheet">
+      <string>QScrollArea { border: none; background: transparent; }</string>
+     </property>
+     <widget class="QWidget" name="scrollContent">
+      <property name="styleSheet">
+       <string>background: transparent;</string>
+      </property>
+      <layout class="QVBoxLayout" name="contentLayout">
+       <property name="leftMargin"><number>48</number></property>
+       <property name="topMargin"><number>36</number></property>
+       <property name="rightMargin"><number>48</number></property>
+       <property name="bottomMargin"><number>48</number></property>
+       <property name="spacing"><number>0</number></property>
+
+       <!-- ──────────────────────── HEADER -->
+       <item>
+        <layout class="QHBoxLayout" name="headerLayout">
+         <property name="spacing"><number>0</number></property>
+
+         <item>
+          <layout class="QVBoxLayout" name="titleLayout">
+           <property name="spacing"><number>6</number></property>
+           <item>
+            <widget class="QLabel" name="titleLabel">
+             <property name="text"><string>Программа тренировок</string></property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>28</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string>color: #ffffff; background: transparent;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="subtitleLabel">
+             <property name="text">
+              <string>Пройдите тестирование для загрузки персонального плана</string>
+             </property>
+             <property name="font">
+              <font>
+               <family>Segoe UI</family>
+               <pointsize>11</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string>color: #444; background: transparent;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+
+         <item alignment="Qt::AlignBottom">
+          <widget class="LaunchButton" name="launchBtn">
+           <property name="text"><string>Запустить гимнастику</string></property>
+           <property name="minimumSize"><size><width>240</width><height>52</height></size></property>
+           <property name="maximumSize"><size><width>240</width><height>52</height></size></property>
+          </widget>
+         </item>
+
+        </layout>
+       </item>
+
+       <!-- spacer 32px -->
+       <item>
+        <spacer name="spacerAfterHeader">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+         <property name="sizeHint" stdset="0">
+          <size><width>20</width><height>32</height></size>
+         </property>
+        </spacer>
+       </item>
+
+       <!-- ──────────────────────── PARAMS FRAME -->
+       <item>
+        <widget class="QFrame" name="paramsFrame">
+         <property name="visible"><bool>false</bool></property>
+         <layout class="QVBoxLayout" name="paramsOuterLayout">
+          <property name="leftMargin"><number>0</number></property>
+          <property name="topMargin"><number>0</number></property>
+          <property name="rightMargin"><number>0</number></property>
+          <property name="bottomMargin"><number>0</number></property>
+          <property name="spacing"><number>16</number></property>
+          <item>
+           <widget class="QLabel" name="paramsSectionLabel">
+            <property name="text"><string>ПАРАМЕТРЫ ПЛАНА</string></property>
+            <property name="font">
+             <font>
+              <family>Segoe UI</family>
+              <pointsize>9</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string>color: #888; letter-spacing: 2px; background: transparent;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="paramsGrid">
+            <property name="spacing"><number>12</number></property>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+
+       <!-- spacer 32px -->
+       <item>
+        <spacer name="spacerAfterParams">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+         <property name="sizeHint" stdset="0">
+          <size><width>20</width><height>32</height></size>
+         </property>
+        </spacer>
+       </item>
+
+       <!-- ──────────────────────── EXERCISES FRAME -->
+       <item>
+        <widget class="QFrame" name="exercisesFrame">
+         <property name="visible"><bool>false</bool></property>
+         <layout class="QVBoxLayout" name="exercisesOuterLayout">
+          <property name="leftMargin"><number>0</number></property>
+          <property name="topMargin"><number>0</number></property>
+          <property name="rightMargin"><number>0</number></property>
+          <property name="bottomMargin"><number>0</number></property>
+          <property name="spacing"><number>16</number></property>
+          <item>
+           <layout class="QHBoxLayout" name="exHeaderLayout">
+            <item>
+             <widget class="QLabel" name="exSectionLabel">
+              <property name="text"><string>СПИСОК УПРАЖНЕНИЙ</string></property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+                <pointsize>8</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string>color: #888; letter-spacing: 2px; background: transparent;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="exHeaderSpacer">
+              <property name="orientation"><enum>Qt::Horizontal</enum></property>
+              <property name="sizeHint" stdset="0">
+               <size><width>40</width><height>20</height></size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="exCountLabel">
+              <property name="text"><string/></property>
+              <property name="font">
+               <font>
+                <family>Segoe UI</family>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string>color: #444; background: transparent;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="exercisesListLayout">
+            <property name="spacing"><number>8</number></property>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+
+       <!-- bottom stretch -->
+       <item>
+        <spacer name="bottomStretch">
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0">
+          <size><width>20</width><height>40</height></size>
+         </property>
+        </spacer>
+       </item>
+
+      </layout>
+     </widget>
+    </widget>
+   </item>
+
+  </layout>
+ </widget>
+
+ <customwidgets>
+  <customwidget>
+   <class>LaunchButton</class>
+   <extends>QPushButton</extends>
+   <header>tabs.training_tab</header>
+  </customwidget>
+ </customwidgets>
+
+ <resources/>
+ <connections/>
+</ui>

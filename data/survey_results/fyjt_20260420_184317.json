@@ -1,0 +1,66 @@
+{
+  "survey_id": "primary_001",
+  "completed_at": "2026-04-20T15:43:17.220488",
+  "profile": {
+    "name": "fyjt",
+    "age": 323,
+    "wears_glasses": true,
+    "disease_type": "myopia",
+    "disease_level": "-3",
+    "color_blindness": "Healthy",
+    "interests": [
+      "nature"
+    ]
+  },
+  "answers": [
+    {
+      "question_id": "q_name",
+      "question_text": "Введите ваше имя",
+      "answer": [
+        "fyjt"
+      ]
+    },
+    {
+      "question_id": "q_age",
+      "question_text": "Введите ваш возраст",
+      "answer": [
+        "323"
+      ]
+    },
+    {
+      "question_id": "q_med",
+      "question_text": "Носите ли вы очки или линзы?",
+      "answer": [
+        "Да"
+      ]
+    },
+    {
+      "question_id": "q_disease_type",
+      "question_text": "Какое заболевание зрения вам диагностировали?",
+      "answer": [
+        "myopia"
+      ]
+    },
+    {
+      "question_id": "q_disease_level",
+      "question_text": "Какая степень заболевания?",
+      "answer": [
+        "-3"
+      ]
+    },
+    {
+      "question_id": "q_color_blindness",
+      "question_text": "Есть ли у вас нарушение цветового восприятия?",
+      "answer": [
+        "Healthy"
+      ]
+    },
+    {
+      "question_id": "q_int_001",
+      "question_text": "Выберите темы, которые вам нравятся (влияет на сцену упражнений):",
+      "answer": [
+        "nature"
+      ]
+    }
+  ]
+}

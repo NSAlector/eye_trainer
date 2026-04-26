@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "profile_name": "gkj",
+  "profile_age": "—",
+  "profile_disease": "other 0",
+  "exercise_plan": [
+    "Стандартная профилактическая программа"
+  ],
+  "summary": "Пользователь: gkj\nДиагноз: other 0\nОчки/линзы: Нет\nИнтересы: sea\n──────────────────────────────\n• Стандартная профилактическая программа\nФон: plain_white.png",
+  "json_path": "/home/felix/repo/eye-trainer/python_survey/utils/../data/survey_results/gkj_20260413_231503.json"
+}
