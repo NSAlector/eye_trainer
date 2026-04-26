@@ -199,11 +199,11 @@ class EyeTrainerApp(QMainWindow):
         timeline = report.get('timeline', [])
 
         if score >= 75:
-            status = "✅ Отлично"
+            status = "Отлично"
         elif score >= 50:
-            status = "🟡 Хорошо"
+            status = "Хорошо"
         else:
-            status = "❌ Нужно больше практики"
+            status = "Нужно больше практики"
 
         lines = [
             f"Результат: {status}",
@@ -221,7 +221,7 @@ class EyeTrainerApp(QMainWindow):
         if timeline:
             lines.append("\nДинамика по времени:")
             for item in timeline[::2]:  # каждые 2 секунды
-                bar = "🟢" if item['error'] <= self.tab_training._exercise_plan.get('threshold', 175) else "🟡"
+                bar = "+" if item['error'] <= self.tab_training._exercise_plan.get('threshold', 175) else "-"
                 lines.append(f"  {bar} {item['interval']}: {item['error']} px")
 
         self.tab_diagnosis.add_result(

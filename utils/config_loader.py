@@ -36,23 +36,7 @@ class DiseaseConfig:
 
     @property
     def primary_color(self) -> ColorCombo:
-        return self.colors[0] if self.colors else ColorCombo(
-            "белый", "#FFFFFF", "белый", "#FFFFFF", "star"
-        )
-
-    @property
-    def speed_ms(self) -> int:
-        """Скорость в мс для таймера упражнения"""
-        return {"very_slow": 80, "slow": 50, "medium": 30}.get(
-            self.exercises[0].speed if self.exercises else "medium", 30
-        )
-
-    @property
-    def object_scale(self) -> float:
-        """Масштаб объекта"""
-        return {"medium": 1.0, "large": 1.4, "extra_large": 1.8}.get(
-            self.object.size, 1.0
-        )
+        return self.colors[0] if self.colors else ColorCombo(object_color="белый", background="#FFFFFF", background_hex="#FFFFFF", background_file="star")
 
 
 class ConfigLoader:
