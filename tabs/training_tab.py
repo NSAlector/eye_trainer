@@ -69,7 +69,7 @@ class ProcessMonitorThread(QThread):
 
         self.process.wait()
         self._running = False
-
+        
         for t in threads:
             t.join(timeout=1)
 
@@ -88,8 +88,11 @@ class FrameReaderThread(QThread):
         super().__init__()
         self.reader = SharedMemoryReader("frames")
         self.running = False
-        self.transform = cyclegan_transform  
-
+        self._cyclegan = ColabLTXTransform(
+            api_url="https://your-ngrok-url.ngrok-free.app",
+            prompt="photorealistic nature scene, smooth motion, vivid colors",
+            strength=0.65,  # lower = closer to original motion, higher = more stylized
+    )
     def run(self):
         self.running = True
         while self.running:
@@ -99,8 +102,8 @@ class FrameReaderThread(QThread):
                 continue
 
             try:
-                if self.transform is not None:
-                    frame = self.transform.transform(frame)
+                if self._cyclegan is not None:
+                    frame = self._cyclegan.transform(frame)
 
                 h, w = frame.shape[:2]
                 if not frame.flags['C_CONTIGUOUS']:
