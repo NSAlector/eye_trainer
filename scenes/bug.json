@@ -1,0 +1,24 @@
+{
+  "bug": {
+    "bg": {
+      "texture": "grass.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [0.2, 0.3, 0.9],
+        "Protanopia":    [0.2, 0.3, 0.9],
+        "Tritanopia":    [0.3, 0.8, 0.2],
+        "Achromatopsia": [0.25, 0.25, 0.25]
+      }
+    },
+    "object": {
+      "texture": "bug.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [0.95, 0.9,  0.0],
+        "Protanopia":    [0.95, 0.9,  0.0],
+        "Tritanopia":    [0.95, 0.1,  0.1],
+        "Achromatopsia": [1.0,  1.0,  1.0]
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+disease: hyperopia
+level: +5
+dioptria_range: "+5.0 и более диоптрий"
+description: "Дальнозоркость высокой степени"
+
+object:
+  size: "extra_large"
+
+exercises:
+  - name: "circle_right"
+    speed: "very_slow"
+  - name: "horizontal"
+    speed: "very_slow"
+  - name: "vertical"
+    speed: "very_slow"
+  - name: "zigzag"
+    speed: "very_slow"
+  - name: "clock"
+    speed: "very_slow"
+  - name: "two_diagonals"
+    speed: "very_slow"

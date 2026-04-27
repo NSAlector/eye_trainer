@@ -1,0 +1,59 @@
+{
+  "survey_id": "primary_001",
+  "completed_at": "2026-04-26T07:30:32.395480",
+  "profile": {
+    "name": "aFee",
+    "age": null,
+    "wears_glasses": false,
+    "disease_type": "other",
+    "disease_level": "",
+    "color_blindness": "Achromatopsia",
+    "interests": [
+      "sea"
+    ]
+  },
+  "answers": [
+    {
+      "question_id": "q_name",
+      "question_text": "Введите ваше имя",
+      "answer": [
+        "aFee"
+      ]
+    },
+    {
+      "question_id": "q_age",
+      "question_text": "Введите ваш возраст",
+      "answer": [
+        "dsD"
+      ]
+    },
+    {
+      "question_id": "q_med",
+      "question_text": "Носите ли вы очки или линзы?",
+      "answer": [
+        "Нет"
+      ]
+    },
+    {
+      "question_id": "q_disease_type",
+      "question_text": "Какое заболевание зрения вам диагностировали?",
+      "answer": [
+        "other"
+      ]
+    },
+    {
+      "question_id": "q_color_blindness",
+      "question_text": "Есть ли у вас нарушение цветового восприятия?",
+      "answer": [
+        "Achromatopsia"
+      ]
+    },
+    {
+      "question_id": "q_int_001",
+      "question_text": "Выберите темы, которые вам нравятся (влияет на сцену упражнений):",
+      "answer": [
+        "sea"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+[project]
+name = "PySide Project"
+
+[tool.pyside6-project]
+files = ["main.py",
+        "tabs/__init__.py",
+        "tabs/diagnosis_tab.py",
+        "tabs/testing_tab/testing_tab.py",
+        "tabs/testing_tab/testing_tab.ui",
+        "tabs/testing_tab/control_panel.ui",
+        "tabs/testing_tab/ui_testing_tab.py",
+        "tabs/testing_tab/ui_control_panel.py",
+        "tabs/training_tab.py",
+        "tabs/validation.py",
+        "tests/test_data/example_test.json",
+        "tests/test_configs/config.json",
+        "utils/data_loader.py",
+        "utils/result_processor.py",
+        "utils/db_manager.py",
+        "utils/config_loader.py",
+        "utils/plan_builder.py",
+        "repositories/user_repository.py",
+        "repositories/test_repository.py",
+        "repositories/exercise_repository.py",
+        "test_db.py",
+        "test_validation.py"]

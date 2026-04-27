@@ -1,0 +1,21 @@
+disease: myopia
+level: -1
+dioptria_range: "до -1.0 диоптрии"
+description: "Близорукость очень слабой степени"
+
+object:
+  size: "medium"
+
+exercises:
+  - name: "circle_right"
+    speed: "medium"
+  - name: "horizontal"
+    speed: "medium"
+  - name: "vertical"
+    speed: "medium"
+  - name: "zigzag"
+    speed: "medium"
+  - name: "clock"
+    speed: "medium"
+  - name: "two_diagonals"
+    speed: "medium"

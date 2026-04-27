@@ -1,0 +1,24 @@
+{
+  "bubble": {
+    "bg": {
+      "texture": "underwater.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [0.2, 0.4, 1.0],
+        "Protanopia":    [0.2, 0.4, 1.0],
+        "Tritanopia":    [0.2, 0.7, 0.5],
+        "Achromatopsia": [0.25, 0.25, 0.25]
+      }
+    },
+    "object": {
+      "texture": "bubble.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [1.0, 1.0, 0.0],
+        "Protanopia":    [1.0, 1.0, 0.0],
+        "Tritanopia":    [1.0, 0.9, 0.0],
+        "Achromatopsia": [1.0, 1.0, 1.0]
+      }
+    }
+  }
+}

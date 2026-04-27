@@ -1,0 +1,17 @@
+torch==2.4.0
+torchvision==0.24.0
+dominate==2.9.1
+visdom
+wandb==0.26.0
+Pillow
+six
+numpy
+scipy
+PyQt5==5.15.11
+PySide6==6.9.2
+QtPy
+pygame==2.6.0
+PyOpenGL
+python-json-logger
+colormath
+opencv-python

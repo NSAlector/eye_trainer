@@ -1,0 +1,107 @@
+{
+  "survey_info": {
+    "survey_id": "primary_001",
+    "name": "Первичный опрос",
+    "description": "Сбор базовой информации о пользователе",
+    "duration": 30
+  },
+  "sections": [
+    {
+      "section_id": "personal",
+      "title": "Личная информация",
+      "questions": [
+        {
+          "question_id": "q_name",
+          "text": "Введите ваше имя",
+          "type": "text"
+        },
+        {
+          "question_id": "q_age",
+          "text": "Введите ваш возраст",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "section_id": "medical",
+      "title": "Медицинская информация",
+      "questions": [
+        {
+          "question_id": "q_med",
+          "text": "Носите ли вы очки или линзы?",
+          "type": "boolean"
+        },
+        {
+          "question_id": "q_disease_type",
+          "text": "Какое заболевание зрения вам диагностировали?",
+          "type": "single_choice",
+          "options": [
+            {"text": "Миопия (близорукость)",         "value": "myopia"},
+            {"text": "Гиперметропия (дальнозоркость)", "value": "hyperopia"},
+            {"text": "Другое / не знаю",               "value": "other"}
+          ]
+        },
+        {
+          "question_id": "q_disease_level",
+          "text": "Какая степень заболевания?",
+          "type": "single_choice",
+          "options": [],
+          "skip_if": {
+            "question_id": "q_disease_type",
+            "values": ["other"]
+          },
+          "options_if": {
+            "q_disease_type": {
+              "myopia": [
+                {"text": "Слабая (-1)", "value": "-1"},
+                {"text": "Слабая (-2)", "value": "-2"},
+                {"text": "Средняя (-3)", "value": "-3"},
+                {"text": "Средняя (-4)", "value": "-4"},
+                {"text": "Высокая (-5)", "value": "-5"},
+                {"text": "Высокая (-6)", "value": "-6"}
+              ],
+              "hyperopia": [
+                {"text": "Слабая (+1)", "value": "+1"},
+                {"text": "Слабая (+2)", "value": "+2"},
+                {"text": "Средняя (+3)", "value": "+3"},
+                {"text": "Средняя (+4)", "value": "+4"},
+                {"text": "Высокая (+5)", "value": "+5"},
+                {"text": "Высокая (+6)", "value": "+6"}
+              ]
+            }
+          }
+        },
+        {
+          "question_id": "q_color_blindness",
+          "text": "Есть ли у вас нарушение цветового восприятия?",
+          "type": "single_choice",
+          "options": [
+            {"text": "Нет", "value": "Healthy"},
+            {"text": "Дейтеранопия (слабость к зелёному)", "value": "Deuteranopia"},
+            {"text": "Протанопия (слабость к красному)", "value": "Protanopia"},
+            {"text": "Тританопия (слабость к синему)", "value": "Tritanopia"},
+            {"text": "Ахроматопсия (нет цветного зрения)", "value": "Achromatopsia"}
+          ]
+        }
+      ]
+    },
+    {
+      "section_id": "interests",
+      "title": "Интересы",
+      "questions": [
+        {
+          "question_id": "q_int_001",
+          "text": "Выберите темы, которые вам нравятся (влияет на сцену упражнений):",
+          "type": "multiple_choice",
+          "options": [
+            {"text": "Живая природа", "value": "nature"},
+            {"text": "Авиация и транспорт","value": "transport"},
+            {"text": "Космос и звёзды", "value": "space"},
+            {"text": "Животные", "value": "animals"},
+            {"text": "Водная тематика", "value": "sea"}
+          ]
+        }
+      ]
+    }
+  ]
+}

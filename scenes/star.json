@@ -1,0 +1,24 @@
+{
+  "star": {
+    "bg": {
+      "texture": "night-sky.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [0.1, 0.1, 0.8],
+        "Protanopia":    [0.1, 0.1, 0.8],
+        "Tritanopia":    [0.1, 0.2, 0.1],
+        "Achromatopsia": [0.15, 0.15, 0.15]
+      }
+    },
+    "object": {
+      "texture": "star.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [0.95, 0.9,  0.0],
+        "Protanopia":    [0.95, 0.9,  0.0],
+        "Tritanopia":    [1.0,  1.0,  0.0],
+        "Achromatopsia": [1.0,  1.0,  1.0]
+      }
+    }
+  }
+}

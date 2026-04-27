@@ -1,0 +1,21 @@
+disease: myopia
+level: -6
+dioptria_range: "более -6.25 диоптрий"
+description: "Близорукость высокой степени"
+
+object:
+  size: "extra_large"
+
+exercises:
+  - name: "circle_right"
+    speed: "very_slow"
+  - name: "horizontal"
+    speed: "very_slow"
+  - name: "vertical"
+    speed: "very_slow"
+  - name: "zigzag"
+    speed: "very_slow"
+  - name: "clock"
+    speed: "very_slow"
+  - name: "two_diagonals"
+    speed: "very_slow"
