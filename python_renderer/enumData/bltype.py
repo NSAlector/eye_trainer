@@ -13,3 +13,4 @@ class blType(enum.Enum):
     Protanopia = 2
     Tritanopia = 3
     Achromatopsia = 4
+    test = 5

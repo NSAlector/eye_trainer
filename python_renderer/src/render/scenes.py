@@ -18,4 +18,5 @@ scenes = {
     "mouse": os.path.join(scene_dir("mouse.json")),
     "plane": os.path.join(scene_dir("plane.json")),
     "star": os.path.join(scene_dir("star.json")),
+    "test": os.path.join(scene_dir("test.json")),
 }

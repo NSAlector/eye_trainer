@@ -19,15 +19,39 @@ from datamanager.datamanager import DataManager
 
 from utils.sharedMemoryFileWriter import SharedMemoryWriter
 
-# стрелка часов
-# самолёт по небу
-# звезда на небе
-# змейка``
-# жучок на листе
+class SceneSetterTest:
+    def __init__(self):
+        self.textures = {}
+    def load_texture(self, filename:str, tint:list):
+        if filename in self.textures:
+            return self.textures[filename]
+        
+        path = os.path.join(assert_dir(filename))
+        img = Image.open(path).convert("RGBA")
+        img_array = np.array(img, dtype=np.float32)
 
+        img_array[:, :, 0] *= tint[0]
+        img_array[:, :, 1] *= tint[1]
+        img_array[:, :, 2] *= tint[2]
+        img_array = np.clip(img_array, 0, 255).astype(np.uint8)
 
+        tex_id = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, tex_id)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                     img.width, img.height, 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, img_array)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+        glBindTexture(GL_TEXTURE_2D, 0)
 
-#todo: cach of images
+        self.textures[filename] = tex_id
+        return tex_id
+    def load_scene(self, scene_json_path, bl_type):
+        return {
+            "bg_tex": self.load_texture("test_bg.png", [1.0, 1.0, 1.0]),
+            "object_tex": self.load_texture("test_object.png", [1.0, 1.0, 1.0]),
+        }
+
 class SceneSetter:
     def __init__(self):
         self.textures = {}
@@ -100,8 +124,10 @@ class BaseRenderer:
         self.ball_radius = 1.0
         self.speed = speed 
         self.edge_margin = 0.85
-
-        self.scene_setter = SceneSetter()
+        if bl_type == blType.test:
+            self.scene_setter = SceneSetterTest()
+        else:
+            self.scene_setter = SceneSetter()
         self.scene_data = None
         self.scene_type = scene_type
         self.fbo = None
@@ -181,7 +207,7 @@ class EyeGymnasticsOne(BaseRenderer):
             clock = pygame.time.Clock()
             running = True
             frame_count = 0
-            max_duration = 60 
+            max_duration = 40 
             while running:
                 elapsed = time.time() - start_time
                 

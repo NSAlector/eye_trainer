@@ -1,0 +1,24 @@
+{
+  "mouse": {
+    "bg": {
+      "texture": "test_bg.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [1.0, 1.0, 1.0],
+        "Protanopia":    [1.0, 1.0, 1.0],
+        "Tritanopia":    [1.0, 1.0, 1.0],
+        "Achromatopsia": [1.0, 1.0, 1.0]
+      }
+    },
+    "object": {
+      "texture": "test_object.png",
+      "tint": {
+        "Healthy":       [1.0, 1.0, 1.0],
+        "Deuteranopia":  [1.0, 1.0, 1.0],
+        "Protanopia":    [1.0, 1.0, 1.0],
+        "Tritanopia":    [1.0, 1.0, 1.0],
+        "Achromatopsia": [1.0, 1.0, 1.0]
+      }
+    }
+  }
+}

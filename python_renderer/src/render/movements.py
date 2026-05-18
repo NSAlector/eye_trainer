@@ -58,7 +58,7 @@ def calc_cur_coordinates_zigzag(current_time, orbit_radius, ground_sz, speed):
     period = 1.0
     phase = (t % period) / period  # 0..1
 
-    # пилообразная форма: 0→1→0→1→…
+    # пилообразная форма
     saw = 2 * abs(phase - 0.5)
 
     # движение от -ground_sz/2 до +ground_sz/2 и обратно
@@ -70,7 +70,6 @@ def calc_cur_coordinates_zigzag(current_time, orbit_radius, ground_sz, speed):
 
 def calc_cur_coordinates_clock(current_time, orbit_radius, ground_sz, speed):
     y = 0.5
-    #вариант с автоматом или с парсированием врмемени
     MOVE_TIME = 2.0
     STOP_TIME = 1.0
     CYCLE_TIME = 12.0
@@ -79,46 +78,36 @@ def calc_cur_coordinates_clock(current_time, orbit_radius, ground_sz, speed):
     cycle_time = t % CYCLE_TIME
     
     if cycle_time < MOVE_TIME:
-        #  1: Движение от 9 к 12 часам
         progress = cycle_time / MOVE_TIME
-        angle = math.pi + progress * (math.pi/2)  # π → 3π/2
+        angle = math.pi + progress * (math.pi/2)  # pi -> 3pi/2
         
     elif cycle_time < MOVE_TIME + STOP_TIME:
-        #  2: Остановка на 12 часах
-        angle = 3 * math.pi / 2  # 270°
+        angle = 3 * math.pi / 2 
         
     elif cycle_time < 2*MOVE_TIME + STOP_TIME:
-        #  3: Движение от 12 к 3 часам
         segment_time = cycle_time - (MOVE_TIME + STOP_TIME)
         progress = segment_time / MOVE_TIME
-        angle = 3*math.pi/2 + progress * (math.pi/2)  # 3π/2 → 2π (0)
+        angle = 3*math.pi/2 + progress * (math.pi/2)  # 3pi/2 → 2pi
         
     elif cycle_time < 2*MOVE_TIME + 2*STOP_TIME:
-        #  4: Остановка на 3 часах
-        angle = 0  # 0°
-        
+        angle = 0 
     elif cycle_time < 3*MOVE_TIME + 2*STOP_TIME:
-        #  5: Движение от 3 к 6 часам
         segment_time = cycle_time - (2*MOVE_TIME + 2*STOP_TIME)
         progress = segment_time / MOVE_TIME
-        angle = 0 + progress * (math.pi/2)  # 0 → π/2
+        angle = 0 + progress * (math.pi/2)  #0 -> pi/2
         
     elif cycle_time < 3*MOVE_TIME + 3*STOP_TIME:
-        #  6: Остановка на 6 часах
-        angle = math.pi / 2  # 90°
+        angle = math.pi / 2  
         
     elif cycle_time < 4*MOVE_TIME + 3*STOP_TIME:
-        #  7: Движение от 6 к 9 часам
-        # Движение: по часовой стрелке на 90°
         segment_time = cycle_time - (3*MOVE_TIME + 3*STOP_TIME)
         progress = segment_time / MOVE_TIME
-        angle = math.pi/2 + progress * (math.pi/2)  # π/2 → π
+        angle = math.pi/2 + progress * (math.pi/2)  # pi/2 -> pi
         
     else:
-        #  8: Остановка на 9 часах
-        angle = math.pi  # 180°
+        angle = math.pi  # 180
     
-    #угол в диапазон 0-2π
+    #угол в диапазон 0-2pi
     angle = angle % (2 * math.pi)
     
     x = orbit_radius * math.cos(angle)

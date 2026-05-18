@@ -28,7 +28,6 @@ class UserProfile:
     user_id: Optional[int] = None
     name: str = ""
     age: Optional[int] = None
-    wears_glasses: bool = False
     disease_type: str = "other"
     disease_level: str = ""
     color_blindness: str = "Healthy"
@@ -71,15 +70,13 @@ class ResultProcessor:
                     profile.age = int(values[0]) if values else None
                 except ValueError:
                     profile.age = None
-            elif qid == "q_med":
-                profile.wears_glasses = self._to_bool(values)
             elif qid == "q_disease_type":
                 profile.disease_type = values[0] if values else "other"
             elif qid == "q_disease_level":
                 profile.disease_level = values[0] if values else ""
             elif qid == "q_color_blindness":
                 profile.color_blindness = values[0] if values else "Healthy"
-            elif qid == "q_int_001":
+            elif qid == "q_theme":
                 profile.interests = values
         return profile
 
@@ -100,7 +97,7 @@ class ResultProcessor:
             answers_dict["q_disease_type"] =[profile.disease_type]
             answers_dict["q_disease_level"] = [profile.disease_level]
             answers_dict["q_color_blindness"] =[profile.color_blindness]
-            answers_dict["q_int_001"] = profile.interests
+            answers_dict["q_theme"] = profile.interests
             builder = PlanBuilder()
             plan = builder.build(profile.user_id, answers_dict)
             return plan.to_dict()
@@ -116,10 +113,11 @@ class ResultProcessor:
             "bl_type": profile.color_blindness,
             "scene": "star",
             "object_scale": 1.0,
-            "speed_ms": 2.0,
+            "speed_ms": 30,
+            "exercise_duration": 30,
             "exercises":[
                 {"name": "circle_right", "speed": "medium"},
-                {"name": "horizontal",   "speed": "medium"},
+                {"name": "horizontal", "speed": "medium"},
             ],
             "notes": ["Стандартная программа"],
         }
@@ -138,7 +136,6 @@ class ResultProcessor:
                 "profile": {
                     "name": profile.name,
                     "age": profile.age,
-                    "wears_glasses": profile.wears_glasses,
                     "disease_type": profile.disease_type,
                     "disease_level": profile.disease_level,
                     "color_blindness": profile.color_blindness,
@@ -217,7 +214,6 @@ class ResultProcessor:
         level_str = f" {profile.disease_level}" if profile.disease_level else ""
         lines.append(f"Диагноз: {disease_ru}{level_str}")
         lines.append(f"Цветовое зрение: {BL_RU.get(profile.color_blindness, profile.color_blindness)}")
-        lines.append(f"Очки/линзы: {'Да' if profile.wears_glasses else 'Нет'}")
 
         if profile.interests:
             ints = ", ".join(INTERESTS_RU.get(i, i) for i in profile.interests)

@@ -3,6 +3,8 @@ level: -5
 dioptria_range: "более -6.25 диоптрий"
 description: "Близорукость высокой степени"
 
+exercise_duration: 45
+
 object:
   size: "extra_large"
 

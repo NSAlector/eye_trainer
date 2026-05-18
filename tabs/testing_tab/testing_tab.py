@@ -38,11 +38,11 @@ class TestingTab(QWidget):
         self.control_widget.setVisible(False)
 
         self.questions = []
-        self.current_idx = 0
-        self.answers = {}
+        self.current_idx  = 0
+        self.answers      = {}
         self.button_group = None
-        self._survey_id = ""
-        self._text_input = None
+        self._survey_id   = ""
+        self._text_input  = None
 
         self.ui.groupBox.setVisible(False)
         self.ui.labelProgress.setVisible(False)
@@ -53,10 +53,11 @@ class TestingTab(QWidget):
         self.cp.btnNext.clicked.connect(self._on_next)
         self.cp.btnFinish.clicked.connect(self._on_finish)
 
+
     def _should_skip(self, q: dict) -> bool:
         skip_if = q.get("skip_if")
         if skip_if:
-            dep_qid = skip_if.get("question_id")
+            dep_qid     = skip_if.get("question_id")
             skip_values = skip_if.get("values", [])
             for ans in self.answers.values():
                 if ans.question_id == dep_qid:
@@ -82,8 +83,7 @@ class TestingTab(QWidget):
                         if chosen in mapping:
                             return mapping[chosen]
             return []
-        raw = q.get("options", [])
-        return raw
+        return q.get("options", [])
 
     def _next_valid_idx(self, from_idx: int, direction: int = 1) -> int:
         idx = from_idx + direction
@@ -105,23 +105,26 @@ class TestingTab(QWidget):
                 return pos
         return pos
 
+
     def _on_start(self):
-        loader = SurveyLoader()
+        loader      = SurveyLoader()
         current_dir = Path(__file__).resolve().parent
         project_root = current_dir.parent.parent
         abs_survey_path = project_root / "tests" / "test_data" / "example_test.json"
 
         if not abs_survey_path.exists():
             print(f"[TestingTab] Файл с тестом не найден: {abs_survey_path}")
-            self.ui.labelQuestion.setText(f"Ошибка: Файл с вопросами не найден!\n{abs_survey_path}")
+            self.ui.labelQuestion.setText(
+                f"Ошибка: Файл с вопросами не найден!\n{abs_survey_path}"
+            )
             return
 
         survey = loader.load(str(abs_survey_path))
 
-        self._survey_id = survey.get("survey_info", {}).get("survey_id", "unknown")
-        self.questions = loader.get_all_questions(survey)
+        self._survey_id  = survey.get("survey_info", {}).get("survey_id", "unknown")
+        self.questions   = loader.get_all_questions(survey)
         self.current_idx = 0
-        self.answers = {}
+        self.answers     = {}
 
         if not self.questions:
             self.ui.labelQuestion.setText("Нет вопросов в тесте!")
@@ -155,10 +158,11 @@ class TestingTab(QWidget):
         self._save_answer()
         self._finish()
 
+
     def _show_question(self):
-        q = self.questions[self.current_idx]
+        q     = self.questions[self.current_idx]
         total = self._visible_count()
-        pos = self._visible_position()
+        pos   = self._visible_position()
 
         self.ui.progressBar.setValue(int((pos / total) * 100))
         self.ui.labelProgress.setText(f"Вопрос {pos} из {total}")
@@ -176,10 +180,13 @@ class TestingTab(QWidget):
 
         self._clear_answers()
 
-        q_type = q.get("type", "single_choice")
+        q_type  = q.get("type", "single_choice")
         options = self._get_options(q)
-        opts = [o["text"] if isinstance(o, dict) else o for o in options]
-        saved = self.answers.get(self.current_idx)
+        opts    = [o["text"] if isinstance(o, dict) else o for o in options]
+
+        # Retrieve saved answer by question_id
+        question_id = q.get("question_id", f"q_{self.current_idx}")
+        saved = self.answers.get(question_id)
 
         if q_type == "text":
             self._build_text_input(saved)
@@ -226,18 +233,21 @@ class TestingTab(QWidget):
         self.button_group = None
         self._text_input  = None
 
+    # ── Save / Finish ─────────────────────────────────────────────────────────
+
     def _save_answer(self):
-        q = self.questions[self.current_idx]
-        q_type = q.get("type", "single_choice")
+        q           = self.questions[self.current_idx]
+        question_id = q.get("question_id", f"q_{self.current_idx}")
+        q_type      = q.get("type", "single_choice")
 
         if q_type == "text" and self._text_input:
-            text = self._text_input.text().strip()
+            text     = self._text_input.text().strip()
             selected = [text] if text else []
         else:
-            layout = self.ui.answersLayout
+            layout   = self.ui.answersLayout
             selected = []
 
-            raw_opts = self._get_options(q)
+            raw_opts     = self._get_options(q)
             text_to_value = {}
             for o in raw_opts:
                 if isinstance(o, dict) and "value" in o:
@@ -252,22 +262,27 @@ class TestingTab(QWidget):
                     txt = w.text()
                     selected.append(text_to_value.get(txt, txt))
 
-        self.answers[self.current_idx] = SurveyAnswer(
-            question_id = q.get("question_id", f"q_{self.current_idx}"),
+        # Store by question_id for consistent retrieval
+        self.answers[question_id] = SurveyAnswer(
+            question_id   = question_id,
             question_text = q.get("text", ""),
-            answer = selected,
+            answer        = selected,
         )
 
     def _finish(self):
         all_answers = []
-        for idx, ans in self.answers.items():
-            if idx < len(self.questions):
-                if not self._should_skip(self.questions[idx]):
-                    all_answers.append(ans)
+        for question_id, ans in self.answers.items():
+            question = None
+            for q in self.questions:
+                if q.get("question_id", f"q_{self.questions.index(q)}") == question_id:
+                    question = q
+                    break
+            if question and not self._should_skip(question):
+                all_answers.append(ans)
 
         result = SurveyResult(
             survey_id = self._survey_id,
-            answers = all_answers,
+            answers   = all_answers,
         )
         self.survey_finished.emit(result)
 

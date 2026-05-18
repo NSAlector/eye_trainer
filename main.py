@@ -1,12 +1,27 @@
+"""
+Eye Trainer Application - Main Entry Point
+
+A comprehensive eye training application with:
+- Survey/testing module for diagnosis
+- Results and progress tracking
+- Personalized training plan generation and execution
+
+All logic is integrated in Python using PySide6 GUI framework.
+"""
 import sys
+sys.path.insert(0, r'C:\Qt\eye_gymnastics2')
 import multiprocessing
-from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget
-from PySide6.QtCore import Qt
+from pathlib import Path
+from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QMessageBox
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QIcon
+
 from tabs.testing_tab.testing_tab import TestingTab
 from tabs.diagnosis_tab import DiagnosisTab
-from tabs.training_tab import TrainingTab
+from tabs.training_tab.training_tab import TrainingTab
 from utils.result_processor import ResultProcessor
 
+# Application-wide stylesheet
 STYLE = """
 * {
     font-family: 'Bahnschrift';
@@ -141,7 +156,6 @@ class EyeTrainerApp(QMainWindow):
         self.setStyleSheet(STYLE)
 
         self._processor = ResultProcessor()
-        self._current_user_id = None
 
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
@@ -154,59 +168,93 @@ class EyeTrainerApp(QMainWindow):
         self.tabs.addTab(self.tab_diagnosis, "  Диагностика   ")
         self.tabs.addTab(self.tab_training, "  Тренировка    ")
 
+        self.tab_training.training_finished.connect(self._on_training_finished)
         self.setCentralWidget(self.tabs)
 
         self.tab_testing.survey_finished.connect(self._on_survey_finished)
         self.tabs.currentChanged.connect(self._on_tab_changed)
-        self.tab_training.training_finished.connect(self._on_training_finished)
 
     def _on_survey_finished(self, survey_result):
-        result = self._processor.process(survey_result)
+        try:
+            result = self._processor.process(survey_result)
+            
+            self.tab_diagnosis.add_result(
+                source="Первичный опрос",
+                data=result["summary"],
+            )
+            
+            plan = result["exercise_plan"]
+            self.tab_training.apply_plan(plan)
+            
+            QTimer.singleShot(50, lambda: self.tabs.setCurrentIndex(1))
+            
+        except Exception as e:
+            self._show_error(f"Ошибка при обработке результатов теста: {str(e)}")
 
-        self._current_user_id = result.get("user_id")
+    def _on_training_finished(self, report):
+        score = report['score']
+        avg_error = report['avg_error']
+        anomalies = report.get('anomalies', [])
+        timeline = report.get('timeline', [])
+
+        if score >= 75:
+            status = "Отлично"
+        elif score >= 50:
+            status = "Хорошо"
+        else:
+            status = "Нужно больше практики"
+
+        lines = [
+            f"Результат: {status}",
+            f"Точность: {score}%",
+            f"Средняя ошибка: {avg_error} px",
+        ]
+
+        if anomalies:
+            lines.append(f"Потеря взгляда: {len(anomalies)} раз(а)")
+            for seg in anomalies:
+                lines.append(f"  • {seg[0]:.1f}с — {seg[1]:.1f}с")
+        else:
+            lines.append("Потеря взгляда: не обнаружена")
+
+        if timeline:
+            lines.append("\nДинамика по времени:")
+            for item in timeline[::2]:  # каждые 2 секунды
+                bar = "+" if item['error'] <= self.tab_training._exercise_plan.get('threshold', 175) else "-"
+                lines.append(f"  {bar} {item['interval']}: {item['error']} px")
 
         self.tab_diagnosis.add_result(
-            source="Первичный опрос",
-            data=result["summary"],
+            source="Анализ тренировки",
+            data="\n".join(lines)
         )
-
-        plan = result["exercise_plan"]
-        self.tab_training.apply_plan(plan, self._current_user_id)
-
         self.tabs.setCurrentIndex(1)
 
     def _on_tab_changed(self, index):
-        if index == 2 and self._current_user_id:
-            if not self.tab_training._exercise_plan:
-                self.tab_training.load_plan_from_db(self._current_user_id)
+        pass
 
-    def _on_training_finished(self, report):
-        status = "Успешно" if report['is_success'] else "Требуется повторение"
-
-        report_text = (
-            f"Оценка точности: {report['score']}/100\n"
-            f"Средняя ошибка: {report['avg_error']} px\n"
-            f"Результат: {status}\n"
-            f"Участков потери фокуса: {len(report['anomalies'])}"
-        )
-
-        self.tab_diagnosis.add_result(
-            source="Анализ гимнастики",
-            data=report_text
-        )
-        self.tabs.setCurrentIndex(1)
+    def _show_error(self, message: str):
+        QMessageBox.critical(self, "Ошибка", message)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Escape:
             self.close()
+        else:
+            super().keyPressEvent(event)
 
     def closeEvent(self, event):
         self.tab_training._cleanup()
         super().closeEvent(event)
 
 
+
 if __name__ == "__main__":
     multiprocessing.freeze_support()
+    
     app = QApplication(sys.argv)
+    
+    app.setStyle("Fusion")
+    
     window = EyeTrainerApp()
+    window.show()
+    
     sys.exit(app.exec())

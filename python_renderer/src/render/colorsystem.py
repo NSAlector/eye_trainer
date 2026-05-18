@@ -111,9 +111,9 @@ class ColorSystem:
     def init_lighting(self):
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
-        glLightfv(GL_LIGHT0, GL_POSITION, [5.0, 10.0, 5.0, 1.0])
-        glLightfv(GL_LIGHT0, GL_DIFFUSE,  [1.0, 1.0, 1.0, 1.0])
-        glLightfv(GL_LIGHT0, GL_AMBIENT,  [0.3, 0.3, 0.3, 1.0])
+        glLightfv(GL_LIGHT0, GL_POSITION,[5.0, 10.0, 5.0, 1.0])
+        glLightfv(GL_LIGHT0, GL_DIFFUSE,[1.0, 1.0, 1.0, 1.0])
+        glLightfv(GL_LIGHT0, GL_AMBIENT,[0.3, 0.3, 0.3, 1.0])
         glEnable(GL_COLOR_MATERIAL)
         glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
 

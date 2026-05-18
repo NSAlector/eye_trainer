@@ -32,26 +32,11 @@ class DiseaseConfig:
     colors: list
     object: ObjectParams
     exercises: list
+    exercise_duration: int = 30
 
     @property
     def primary_color(self) -> ColorCombo:
-        return self.colors[0] if self.colors else ColorCombo(
-            "белый", "#FFFFFF", "белый", "#FFFFFF", "star"
-        )
-
-    @property
-    def speed_ms(self) -> float:
-        """Скорость в мс для таймера упражнения"""
-        return {"very_slow": 0.3, "slow": 0.5, "medium": 2.0}.get(
-            self.exercises[0].speed if self.exercises else "medium", 2.0
-        )
-
-    @property
-    def object_scale(self) -> float:
-        """Масштаб объекта"""
-        return {"medium": 1.0, "large": 1.4, "extra_large": 1.8}.get(
-            self.object.size, 1.0
-        )
+        return self.colors[0] if self.colors else ColorCombo(object_color="белый", background="#FFFFFF", background_hex="#FFFFFF", background_file="star")
 
 
 class ConfigLoader:
@@ -102,6 +87,7 @@ class ConfigLoader:
             colors = colors,
             object = obj,
             exercises = exercises,
+            exercise_duration = data.get("exercise_duration", 30),
         )
         self._cache[key] = config
         return config

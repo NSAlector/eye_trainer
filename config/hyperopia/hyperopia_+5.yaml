@@ -3,6 +3,8 @@ level: +5
 dioptria_range: "+5.0 и более диоптрий"
 description: "Дальнозоркость высокой степени"
 
+exercise_duration: 45
+
 object:
   size: "extra_large"
 

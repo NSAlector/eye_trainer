@@ -3,6 +3,8 @@ level: -1
 dioptria_range: "до -1.0 диоптрии"
 description: "Близорукость очень слабой степени"
 
+exercise_duration: 30
+
 object:
   size: "medium"
 
