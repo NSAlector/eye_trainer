@@ -5,6 +5,8 @@ import mmap
 import struct
 import time
 import json
+import cv2
+import traceback
 import numpy as np
 from pathlib import Path
 
@@ -17,13 +19,150 @@ from python_renderer.sharedMemoryFileWriter import SharedMemoryWriter
 from tabs.validation import ExerciseValidator
 
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QScrollArea,
-    QPushButton, QFrame, QGridLayout,
+    QWidget, QVBoxLayout, QLabel, QScrollArea, QTabWidget,
+    QPushButton, QFrame, QGridLayout, QApplication,
     QGraphicsDropShadowEffect, QHBoxLayout, QSizePolicy,
 )
 from PySide6.QtCore import Qt, Signal, QThread, QFile, QTimer
 from PySide6.QtGui import QFont, QColor, QPixmap, QImage
 from PySide6.QtUiTools import QUiLoader
+
+class CameraRecorderThread(QThread):
+    recording_started = Signal()
+    recording_error = Signal(str)
+
+    def __init__(self, output_path: str = None):
+        super().__init__()
+        self.running = False
+        self.cap = None
+        self.writer = None
+        self.output_path = output_path or self._get_default_output_path()
+        self.fps = 30
+        self.frame_width = 640
+        self.frame_height = 480
+        self.frame_count = 0
+
+    def _get_default_output_path(self) -> str:
+        from datetime import datetime as dt
+        timestamp = dt.now().strftime("%Y%m%d_%H%M%S")
+        data_dir = Path(__file__).resolve().parent.parent.parent / "data" / "videos"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return str(data_dir / f"camera_recording_{timestamp}.avi")
+
+    def _init_video_writer(self):
+        import platform
+
+        codecs = []
+        if platform.system() == "Linux":
+            codecs = [
+                ('MJPG', 'avi'),
+                ('XVID', 'avi'),
+                ('WMV1', 'avi'),
+            ]
+        elif platform.system() == "Darwin":
+            codecs = [
+                ('mp4v', 'mp4'),
+                ('avc1', 'mp4'),
+                ('MJPG', 'avi'),
+            ]
+        else:
+            codecs = [
+                ('mp4v', 'mp4'),
+                ('XVID', 'avi'),
+                ('MJPG', 'avi'),
+            ]
+
+        for codec_code, ext in codecs:
+            try:
+                fourcc = cv2.VideoWriter_fourcc(*codec_code)
+                output_path = self.output_path.rsplit('.', 1)[0] + f'.{ext}'
+
+                writer = cv2.VideoWriter(
+                    output_path,
+                    fourcc,
+                    self.fps,
+                    (self.frame_width, self.frame_height)
+                )
+
+                if writer.isOpened():
+                    print(f"[CameraRecorderThread] Using codec: {codec_code} with extension: {ext}")
+                    self.output_path = output_path
+                    return writer
+            except Exception as e:
+                print(f"[CameraRecorderThread] Codec {codec_code} failed: {e}")
+                continue
+
+        raise RuntimeError("No suitable video codec found")
+
+    def run(self):
+        self.running = True
+        try:
+            self.cap = cv2.VideoCapture(0)
+            if not self.cap.isOpened():
+                self.recording_error.emit("Failed to open camera")
+                return
+
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.frame_width)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.frame_height)
+            self.cap.set(cv2.CAP_PROP_FPS, self.fps)
+
+            self.writer = self._init_video_writer()
+
+            if not self.writer or not self.writer.isOpened():
+                self.recording_error.emit(f"Failed to open video writer at {self.output_path}")
+                if self.cap:
+                    self.cap.release()
+                return
+
+            print(f"[CameraRecorderThread] Started recording to {self.output_path}")
+            self.recording_started.emit()
+
+            frame_skip = 0
+            while self.running:
+                ret, frame = self.cap.read()
+                if not ret:
+                    print("[CameraRecorderThread] Failed to read frame from camera")
+                    import time as time_module
+                    time_module.sleep(0.01)
+                    continue
+
+                if frame.shape[1] != self.frame_width or frame.shape[0] != self.frame_height:
+                    frame = cv2.resize(frame, (self.frame_width, self.frame_height))
+
+                self.writer.write(frame)
+                self.frame_count += 1
+
+                if self.frame_count % 1 == 0:
+                    try:
+                        _ = self.writer.get(cv2.CAP_PROP_FRAME_COUNT)
+                    except:
+                        pass
+
+                import time as time_module
+                time_module.sleep(1.0 / self.fps)
+
+        except Exception as e:
+            self.recording_error.emit(f"Camera recording error: {str(e)}")
+            print(f"[CameraRecorderThread] Error: {e}")
+            traceback.print_exc()
+        finally:
+            self._cleanup()
+            print(f"[CameraRecorderThread] Stopped (recorded {self.frame_count} frames)")
+
+    def _cleanup(self):
+        self.writer = None
+
+        if self.cap:
+            try:
+                self.cap.release()
+            except:
+                pass
+            self.cap = None
+
+    def stop(self):
+        self.running = False
+        self.wait(3000)
+
 
 class SharedMemoryReader:
     def __init__(self, name="frames"):
@@ -291,13 +430,16 @@ class TrainingTab(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        screen = QApplication.primaryScreen().geometry()
         self._exercise_plan = {}
         self._current_user_id = None
         self._frame_reader_thread = None
         self._process_monitor_thread = None
+        self._camera_recorder_thread = None
         self._renderer_process = None
+        self._is_training = False
         self._current_ex_index = 0
-        self._tracker = GazeTrackerRunner(width=1280, height=720)
+        self._tracker = GazeTrackerRunner(width=screen.width(), height=screen.height())
         self._load_ui()
 
     def _load_ui(self):
@@ -314,7 +456,11 @@ class TrainingTab(QWidget):
         root_layout.addWidget(ui_widget)
         def w(cls, name): return ui_widget.findChild(cls, name)
         self._video_frame = w(QFrame, "videoFrame")
+
         self._video_label = w(QLabel, "videoLabel")
+        self._video_label.setScaledContents(False)
+        self._original_label_size = None
+
         self._stop_btn = w(LaunchButton, "stopBtn")
         self._title = w(QLabel, "titleLabel")
         self._subtitle = w(QLabel, "subtitleLabel")
@@ -367,10 +513,21 @@ class TrainingTab(QWidget):
         return self._exercise_plan or {"scene": "star", "object_scale": 1.0, "speed_ms": 30}
 
     def _launch_gymnastics(self):
-        if hasattr(self, "_first_frame_received"): del self._first_frame_received
+        if self._is_training:
+            return
+        if hasattr(self, "_first_frame_received"):
+            del self._first_frame_received
         self._current_ex_index = 0
-        if hasattr(self, '_tracker'):
-            self._tracker.start()
+        self._is_training = True
+        self._tracker.start()
+        self._enter_fullscreen()
+
+        self._camera_recorder_thread = CameraRecorderThread()
+        self._camera_recorder_thread.recording_started.connect(self._on_camera_recording_started)
+        self._camera_recorder_thread.recording_error.connect(self._on_camera_recording_error)
+        self._camera_recorder_thread.start()
+        print("[TrainingTab] Camera recording started")
+
         self._start_next_exercise()
 
     def _start_next_exercise(self):
@@ -391,6 +548,9 @@ class TrainingTab(QWidget):
         duration = plan.get("exercise_duration", 30)
         multiplier = plan.get("speed_factor", 1.0)
         final_speed = round(base_speed * multiplier, 2)
+        screen = self.screen().geometry()
+        screen_w = screen.width()
+        screen_h = screen.height()
         print(f"[TrainingTab] exercise={exercise_name}, base={base_speed}, factor={multiplier}, final={final_speed}")
         PROJECT_ROOT = Path(__file__).resolve()
         while not (PROJECT_ROOT / "python_renderer").exists() and PROJECT_ROOT.parent != PROJECT_ROOT:
@@ -400,7 +560,7 @@ class TrainingTab(QWidget):
         python_exe = sys.executable
 
         args = [str(python_exe), str(renderer_script), "1", str(bl_type),
-                str(exercise_name), str(scene), str(final_speed), "1280", "720",
+                str(exercise_name), str(scene), str(final_speed), str(screen_w), str(screen_h),
                 str(object_scale), str(duration)]
         env = os.environ.copy()
         env["PYTHONPATH"] = str(root_path)
@@ -423,9 +583,22 @@ class TrainingTab(QWidget):
         QTimer.singleShot(600, self._start_next_exercise)
 
     def _update_frame(self, pixmap: QPixmap):
-        if pixmap.isNull(): return
-        h = self._video_label.height()
-        if h > 0: pixmap = pixmap.scaledToHeight(h, Qt.SmoothTransformation)
+        if pixmap.isNull():
+            return
+
+        if self._current_ex_index == 0 and not hasattr(self, "_first_frame_received"):
+            self._tracker.start_time = time.time()
+            self._tracker.history = []
+            self._first_frame_received = True
+
+        if not self._original_label_size:
+            self._original_label_size = (self._video_label.width(), self._video_label.height())
+
+        label_w, label_h = self._original_label_size
+        if label_w > 0 and label_h > 0:
+            pixmap = pixmap.scaled(label_w, label_h,
+                                   Qt.AspectRatioMode.KeepAspectRatioByExpanding,
+                                   Qt.TransformationMode.SmoothTransformation)
         self._video_label.setPixmap(pixmap)
 
     def _stop_renderer_only(self):
@@ -439,7 +612,15 @@ class TrainingTab(QWidget):
             self._renderer_process = None
 
     def _stop_training(self):
+        if not self._is_training:
+            return
+        self._is_training = False
         self._current_ex_index = 0
+
+        if self._camera_recorder_thread:
+            print("[TrainingTab] Stopping camera recorder...")
+            self._camera_recorder_thread.stop()
+            self._camera_recorder_thread = None
 
         if self._process_monitor_thread:
             try:
@@ -463,14 +644,15 @@ class TrainingTab(QWidget):
             self._frame_reader_thread = None
 
         gaze_data = self._tracker.stop()
-
         self._analyze_results(gaze_data)
-
+        self._exit_fullscreen()
         self._video_label.clear()
+        self._original_label_size = None
         self.scrollArea.setVisible(True)
         root_layout = self._ui_root.layout()
         root_layout.setStretch(0, 0)
         root_layout.setStretch(1, 1)
+        self._video_frame.setVisible(False)
 
     def _analyze_results(self, gaze_data):
         PROJECT_ROOT = Path(__file__).resolve()
@@ -487,32 +669,50 @@ class TrainingTab(QWidget):
                             if d.get("levelname") == "INFO":
                                 target_data.append({'duration': d['duration'], 'x_coord': d['x_coord'], 'y_coord': d['y_coord']})
                         except Exception: continue
-            if not target_data or not gaze_data: return
-            GROUND_SIZE, W, H = 12.0 * 0.85, 1280, 720
+            if not target_data or not gaze_data:
+                return
+            screen = QApplication.primaryScreen().geometry()
+            GROUND_SIZE, W, H = 12.0 * 0.85, screen.width(), screen.height()
             for p in target_data:
                 p['x_coord'] = int((p['x_coord'] / GROUND_SIZE + 1.0) * 0.5 * W)
                 p['y_coord'] = int((p['y_coord'] / GROUND_SIZE + 1.0) * 0.5 * H)
             validator = ExerciseValidator(threshold=175.0, window_size=10)
             report = validator.validate(target_data, gaze_data)
+
+            if report.get("score", 100) < 75:
+                self._show_retry_button()
+
             self.training_finished.emit(report)
         except Exception as e:
                print(f"[TrainingTab] analysis error: {e}")
                self.training_finished.emit(default_report)
 
-    def _update_frame(self, pixmap: QPixmap):
-            if pixmap.isNull():
-                return
+    def _enter_fullscreen(self):
+        main_window = self.window()
+        main_window.findChild(QTabWidget).tabBar().setVisible(False)
+        main_window.showFullScreen()
 
-            if self._current_ex_index == 0 and not hasattr(self, "_first_frame_received"):
-                self._tracker.start_time = time.time()
-                self._tracker.history = []
-                self._first_frame_received = True
-                print("[TrainingTab] First frame received, tracker time synchronized!")
+    def _exit_fullscreen(self):
+        main_window = self.window()
+        main_window.findChild(QTabWidget).tabBar().setVisible(True)
+        main_window.showMaximized()
 
-            h = self._video_label.height()
-            if h > 0:
-                pixmap = pixmap.scaledToHeight(h, Qt.SmoothTransformation)
-            self._video_label.setPixmap(pixmap)
+    def _show_retry_button(self):
+        if hasattr(self, "_retry_btn") and self._retry_btn:
+            self._retry_btn.deleteLater()
+
+        self._retry_btn = LaunchButton("Пройти тренировку заново")
+        self._retry_btn.clicked.connect(self._on_retry)
+
+        content_layout = self.scrollArea.widget().layout()
+        content_layout.insertWidget(content_layout.count() - 1, self._retry_btn)
+        self._retry_btn.setVisible(True)
+
+    def _on_retry(self):
+        if hasattr(self, "_retry_btn") and self._retry_btn:
+            self._retry_btn.deleteLater()
+            self._retry_btn = None
+        self._launch_gymnastics()
 
     def _cleanup(self):
         try: self._stop_training()
@@ -521,3 +721,9 @@ class TrainingTab(QWidget):
     def closeEvent(self, event):
         self._cleanup()
         super().closeEvent(event)
+
+    def _on_camera_recording_started(self):
+        print("[TrainingTab] Camera recording has started successfully")
+
+    def _on_camera_recording_error(self, error_msg: str):
+        print(f"[TrainingTab] Camera recording error: {error_msg}")

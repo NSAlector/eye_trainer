@@ -3,6 +3,7 @@ import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
+from utils.json_loader import JsonDataLoader
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "survey_results")
 
@@ -38,7 +39,6 @@ class UserProfile:
 class ResultProcessor:
     def process(self, result: SurveyResult) -> dict:
         profile = self._build_profile(result)
-        self._save_to_json(profile, result)
 
         user_id = self._save_to_db(profile, result)
         profile.user_id = user_id
@@ -48,6 +48,7 @@ class ResultProcessor:
         if user_id:
             self._save_plan_to_db(user_id, plan)
 
+        self._save_to_json(profile, result, plan)
         summary = self._make_summary(profile, plan)
 
         return {
@@ -122,7 +123,7 @@ class ResultProcessor:
             "notes": ["Стандартная программа"],
         }
 
-    def _save_to_json(self, profile: UserProfile, result: SurveyResult):
+    def _save_to_json(self, profile: UserProfile, result: SurveyResult, plan: dict = None):
         try:
             os.makedirs(RESULTS_DIR, exist_ok=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -149,6 +150,7 @@ class ResultProcessor:
                     }
                     for a in result.answers
                 ],
+                "exercise_plan": plan or {},
             }
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)

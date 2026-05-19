@@ -3,10 +3,11 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout,
     QCheckBox, QRadioButton, QButtonGroup, QLineEdit, QLabel
 )
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QTimer
 from .ui_testing_tab import Ui_Form as Ui_TestingTab
 from .ui_control_panel import Ui_Form as Ui_ControlPanel
 from utils.data_loader import SurveyLoader
+from utils.json_loader import JsonDataLoader
 from utils.result_processor import SurveyResult, SurveyAnswer
 
 SKIP_LEVEL_FOR = {"other", ""}
@@ -39,9 +40,9 @@ class TestingTab(QWidget):
 
         self.questions = []
         self.current_idx  = 0
-        self.answers      = {}
+        self.answers = {}
         self.button_group = None
-        self._survey_id   = ""
+        self._survey_id = ""
         self._text_input  = None
 
         self.ui.groupBox.setVisible(False)
@@ -52,13 +53,12 @@ class TestingTab(QWidget):
         self.cp.btnPrev.clicked.connect(self._on_prev)
         self.cp.btnNext.clicked.connect(self._on_next)
         self.cp.btnFinish.clicked.connect(self._on_finish)
-
-    # ── Skip logic ────────────────────────────────────────────────────────────
+        self._try_load_last_result()
 
     def _should_skip(self, q: dict) -> bool:
         skip_if = q.get("skip_if")
         if skip_if:
-            dep_qid     = skip_if.get("question_id")
+            dep_qid = skip_if.get("question_id")
             skip_values = skip_if.get("values", [])
             for ans in self.answers.values():
                 if ans.question_id == dep_qid:
@@ -106,10 +106,8 @@ class TestingTab(QWidget):
                 return pos
         return pos
 
-    # ── Survey flow ───────────────────────────────────────────────────────────
-
     def _on_start(self):
-        loader      = SurveyLoader()
+        loader = SurveyLoader()
         current_dir = Path(__file__).resolve().parent
         project_root = current_dir.parent.parent
         abs_survey_path = project_root / "tests" / "test_data" / "example_test.json"
@@ -123,10 +121,10 @@ class TestingTab(QWidget):
 
         survey = loader.load(str(abs_survey_path))
 
-        self._survey_id  = survey.get("survey_info", {}).get("survey_id", "unknown")
-        self.questions   = loader.get_all_questions(survey)
+        self._survey_id = survey.get("survey_info", {}).get("survey_id", "unknown")
+        self.questions = loader.get_all_questions(survey)
         self.current_idx = 0
-        self.answers     = {}
+        self.answers = {}
 
         if not self.questions:
             self.ui.labelQuestion.setText("Нет вопросов в тесте!")
@@ -160,12 +158,10 @@ class TestingTab(QWidget):
         self._save_answer()
         self._finish()
 
-    # ── Display ───────────────────────────────────────────────────────────────
-
     def _show_question(self):
-        q     = self.questions[self.current_idx]
+        q = self.questions[self.current_idx]
         total = self._visible_count()
-        pos   = self._visible_position()
+        pos = self._visible_position()
 
         self.ui.progressBar.setValue(int((pos / total) * 100))
         self.ui.labelProgress.setText(f"Вопрос {pos} из {total}")
@@ -183,11 +179,10 @@ class TestingTab(QWidget):
 
         self._clear_answers()
 
-        q_type  = q.get("type", "single_choice")
+        q_type = q.get("type", "single_choice")
         options = self._get_options(q)
-        opts    = [o["text"] if isinstance(o, dict) else o for o in options]
+        opts = [o["text"] if isinstance(o, dict) else o for o in options]
 
-        # Retrieve saved answer by question_id
         question_id = q.get("question_id", f"q_{self.current_idx}")
         saved = self.answers.get(question_id)
 
@@ -234,23 +229,21 @@ class TestingTab(QWidget):
             if item.widget():
                 item.widget().deleteLater()
         self.button_group = None
-        self._text_input  = None
-
-    # ── Save / Finish ─────────────────────────────────────────────────────────
+        self._text_input = None
 
     def _save_answer(self):
-        q           = self.questions[self.current_idx]
+        q = self.questions[self.current_idx]
         question_id = q.get("question_id", f"q_{self.current_idx}")
-        q_type      = q.get("type", "single_choice")
+        q_type = q.get("type", "single_choice")
 
         if q_type == "text" and self._text_input:
-            text     = self._text_input.text().strip()
+            text = self._text_input.text().strip()
             selected = [text] if text else []
         else:
-            layout   = self.ui.answersLayout
+            layout = self.ui.answersLayout
             selected = []
 
-            raw_opts     = self._get_options(q)
+            raw_opts = self._get_options(q)
             text_to_value = {}
             for o in raw_opts:
                 if isinstance(o, dict) and "value" in o:
@@ -265,11 +258,10 @@ class TestingTab(QWidget):
                     txt = w.text()
                     selected.append(text_to_value.get(txt, txt))
 
-        # Store by question_id for consistent retrieval
         self.answers[question_id] = SurveyAnswer(
-            question_id   = question_id,
+            question_id = question_id,
             question_text = q.get("text", ""),
-            answer        = selected,
+            answer = selected,
         )
 
     def _finish(self):
@@ -285,7 +277,7 @@ class TestingTab(QWidget):
 
         result = SurveyResult(
             survey_id = self._survey_id,
-            answers   = all_answers,
+            answers = all_answers,
         )
         self.survey_finished.emit(result)
 
@@ -298,3 +290,15 @@ class TestingTab(QWidget):
         self.control_widget.setVisible(False)
         self.ui.btnStart.setText("Пройти ещё раз")
         self.ui.btnStart.setVisible(True)
+
+    def _try_load_last_result(self):
+        saved = JsonDataLoader.get_latest_profile()
+        if not saved:
+            return
+
+        answers = [SurveyAnswer(question_id=a["question_id"], question_text=a["question_text"], answer=a["answer"],)
+                    for a in saved.get("answers", [])]
+
+        result = SurveyResult(survey_id=saved.get("survey_id", ""), answers=answers)
+        QTimer.singleShot(0, lambda: self.survey_finished.emit(result))
+

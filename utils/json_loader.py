@@ -3,7 +3,7 @@
 import json
 import os
 from pathlib import Path
-from typing import dict, Optional
+from typing import Optional
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "survey_results")
 
@@ -43,13 +43,10 @@ class JsonDataLoader:
             if not os.path.exists(RESULTS_DIR):
                 return []
             
-            profiles = []
-            for filename in sorted(os.listdir(RESULTS_DIR)):
-                if filename.endswith(".json"):
-                    user_id = os.path.splitext(filename)[0]
-                    profiles.append(user_id)
-            
-            return profiles
+            files = [f for f in os.listdir(RESULTS_DIR) if f.endswith(".json")]
+            files.sort(key=lambda f: os.path.getmtime(os.path.join(RESULTS_DIR, f)))
+            return [os.path.splitext(f)[0] for f in files]
+
         except Exception as e:
             print(f"[JsonDataLoader] Ошибка при получении списка профилей: {e}")
             return []

@@ -154,6 +154,7 @@ class EyeTrainerApp(QMainWindow):
         super().__init__()
         self.setWindowTitle("EyeTrainer")
         self.showMaximized()
+        self.setMinimumSize(0, 0)
         self.setStyleSheet(STYLE)
 
         self._processor = ResultProcessor()
