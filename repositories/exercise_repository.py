@@ -1,5 +1,5 @@
 from utils.db_manager import DatabaseManager
-
+import json
 
 class ExerciseRepository:
     def __init__(self, db: DatabaseManager):
@@ -13,21 +13,23 @@ class ExerciseRepository:
         result = self.db.execute(
             """
             INSERT INTO exercise_plans
-                (user_id, disease, level, background_file,
-                 object_hex, object_scale, speed_ms, exercises, notes)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s)
+                (user_id, disease, level, scene,
+                 bl_type, object_scale, speed_factor,
+                 exercise_duration, exercises, notes)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb)
             RETURNING id;
             """,
             (
                 user_id,
                 plan.get("disease"),
                 plan.get("level"),
-                plan.get("background"),
-                plan.get("object_hex"),
-                plan.get("object_scale"),
-                plan.get("speed_ms"),
-                __import__("json").dumps(plan.get("exercises", []), ensure_ascii=False),
-                __import__("json").dumps(plan.get("notes", []), ensure_ascii=False),
+                plan.get("scene"),
+                plan.get("bl_type", "Healthy"),
+                plan.get("object_scale", 1.0),
+                plan.get("speed_factor", 1.0),
+                plan.get("exercise_duration", 30),
+                json.dumps(plan.get("exercises", []), ensure_ascii=False),
+                json.dumps(plan.get("notes", []), ensure_ascii=False),
             ),
             fetch=True
         )
@@ -44,12 +46,13 @@ class ExerciseRepository:
         return {
             "disease": row[2],
             "level": row[3],
-            "background": row[4],
-            "object_hex": row[5],
+            "scene": row[4],
+            "bl_type": row[5],
             "object_scale": float(row[6]) if row[6] else 1.0,
-            "speed_ms": row[7],
-            "exercises": row[8] if row[8] else [],
-            "notes": row[9] if row[9] else [],
+            "speed_factor": float(row[7]) if row[7] else 1.0,
+            "exercise_duration": row[8] if row[8] else 30,
+            "exercises": row[9] if row[9] else [],
+            "notes": row[10] if row[10] else [],
         }
 
     def save_session(self, user_id: int, exercise_name: str, score: int, avg_error: float, is_success: bool, anomalies: list) -> int:

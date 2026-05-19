@@ -187,8 +187,10 @@ class ResultProcessor:
             repo = ExerciseRepository(db)
             repo.save_plan(user_id, plan)
             db.close()
+            print(f"[DB] план сохранён для user_id={user_id}")
         except Exception as e:
-            print(f"[DB] план не сохранён: {e}")
+            import traceback
+            traceback.print_exc()
 
     @staticmethod
     def _make_summary(profile: UserProfile, plan: dict) -> str:

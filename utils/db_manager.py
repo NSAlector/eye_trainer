@@ -17,9 +17,9 @@ class DatabaseManager:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(query, params)
-                if fetch:
-                    return cur.fetchall()
+                result = cur.fetchall() if fetch else None
                 self.conn.commit()
+                return result
         except Exception as e:
             self.conn.rollback()
             print(f"[DB] Ошибка: {e}")
